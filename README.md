@@ -56,6 +56,20 @@ Báo cáo 5 Whys phải chỉ ra được lỗi nằm ở đâu: Ingestion pipel
 
 ## 🔧 Hướng dẫn chạy
 
+### Cấu hình `.env` (bắt buộc, KHÔNG commit)
+```env
+GROQ_API_KEY=...        # Judge A (Llama-70B) + Agent
+GROQ_API_KEY_2=...      # Judge B (gpt-oss-120B) + Agent V1
+MISTRAL_API_KEY=...     # (dự phòng)
+GEMINI_API_KEY=...      # Tiebreaker (Gemini) khi 2 judge bất đồng
+COHERE_API_KEY=...      # Embedding + Rerank (RAG)
+QDRANT_URL=...          # Vector DB
+QDRANT_API_KEY=...
+```
+> Hệ thống có **fallback**: nếu Cohere/Qdrant bị rate-limit, Retriever tự chuyển
+> sang tìm kiếm **lexical (TF-IDF)** và faithfulness/relevancy dùng proxy
+> token-overlap — pipeline vẫn chạy xong, không lỗi.
+
 ```bash
 # 1. Cài đặt dependencies
 pip install -r requirements.txt
@@ -63,12 +77,19 @@ pip install -r requirements.txt
 # 2. Tạo Golden Dataset (chạy trước khi benchmark)
 python data/synthetic_gen.py
 
-# 3. Chạy Benchmark & tạo reports
+# 3. Chạy Benchmark & tạo reports (V1 vs V2 + Release Gate)
 python main.py
+#    Chạy nhanh trên mẫu N case (free-tier rate-limit chậm):
+#    BENCH_LIMIT=20 python main.py
 
 # 4. Kiểm tra định dạng trước khi nộp
 python check_lab.py
 ```
+
+### 🧩 Kiến trúc giám khảo (chống "thông đồng")
+Panel dùng **3 họ model khác nhau** để tránh thiên vị tương quan:
+- **Judge A:** Groq Llama-3.3-70B (Meta) · **Judge B:** Groq gpt-oss-120B (OpenAI)
+- **Tiebreaker:** Google Gemini-2.5-flash — chỉ gọi khi 2 judge lệch > 1 điểm (cascading, tiết kiệm chi phí).
 
 ---
 

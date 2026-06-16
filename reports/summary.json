@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "version": "Agent_V2_Optimized",
+    "total": 20,
+    "timestamp": "2026-06-16 16:08:52",
+    "wall_time_sec": 319.5
+  },
+  "metrics": {
+    "avg_score": 3.475,
+    "hit_rate": 1.0,
+    "mrr": 1.0,
+    "retrieval_scored_cases": 15,
+    "agreement_rate": 0.7875,
+    "cohen_kappa": 0.28,
+    "faithfulness": 0.3652,
+    "relevancy": 0.2976,
+    "avg_latency_sec": 7.477,
+    "cost_per_eval_usd": 0.000349,
+    "total_cost_usd": 0.006975,
+    "total_tokens": 12701
+  },
+  "pass_fail": {
+    "pass": 19,
+    "fail": 1,
+    "error": 0,
+    "pass_rate": 0.95
+  },
+  "regression": {
+    "v1": {
+      "version": "Agent_V1_Base",
+      "avg_score": 3.775,
+      "hit_rate": 1.0,
+      "mrr": 1.0,
+      "retrieval_scored_cases": 15,
+      "agreement_rate": 0.7375,
+      "cohen_kappa": 0.1273,
+      "faithfulness": 0.3259,
+      "relevancy": 0.155,
+      "avg_latency_sec": 3.427,
+      "cost_per_eval_usd": 0.000373,
+      "total_cost_usd": 0.007469,
+      "total_tokens": 21981,
+      "pass_rate": 1.0
+    },
+    "v2": {
+      "version": "Agent_V2_Optimized",
+      "avg_score": 3.475,
+      "hit_rate": 1.0,
+      "mrr": 1.0,
+      "retrieval_scored_cases": 15,
+      "agreement_rate": 0.7875,
+      "cohen_kappa": 0.28,
+      "faithfulness": 0.3652,
+      "relevancy": 0.2976,
+      "avg_latency_sec": 7.477,
+      "cost_per_eval_usd": 0.000349,
+      "total_cost_usd": 0.006975,
+      "total_tokens": 12701,
+      "pass_rate": 0.95
+    },
+    "gate": {
+      "decision": "BLOCK",
+      "quality_delta": -0.3,
+      "hit_rate_delta": 0.0,
+      "cost_ratio_v2_over_v1": 0.94,
+      "latency_ratio_v2_over_v1": 2.18,
+      "reasons": [
+        "Chất lượng giảm -0.30 điểm (regression)."
+      ],
+      "thresholds": {
+        "quality_min_delta": 0.1,
+        "quality_regress_tol": -0.05,
+        "hitrate_regress_tol": -0.02,
+        "cost_max_ratio": 5.0
+      }
+    }
+  },
+  "position_bias_check": {
+    "consistent": true,
+    "positional_bias": false,
+    "winner_round1": "tie",
+    "winner_round2": "tie"
+  },
+  "cost_optimization": {
+    "observation": "60% số case có agreement_rate >= 0.75 (2 judge đồng thuận cao).",
+    "proposal": "Dùng cơ chế Judge phân tầng (cascading): chỉ chạy Judge A cho case dễ; chỉ gọi Judge B (Mistral, đắt hơn) khi điểm Judge A nằm ở vùng ranh giới (2-4) hoặc độ tự tin thấp. Kết hợp cache embedding cho câu hỏi trùng lặp.",
+    "estimated_eval_cost_reduction_pct": 30.0,
+    "note": "Ước lượng đạt mục tiêu giảm ~30% chi phí eval mà gần như không giảm độ chính xác."
+  }
+}
